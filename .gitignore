@@ -1,0 +1,12 @@
+build/
+dist/
+.venv*/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+results/
+.build/
+vcpkg_installed/
+*.egg-info/

@@ -1,0 +1,32 @@
+cmake_minimum_required(VERSION 3.22)
+project(iimt_windows_cross LANGUAGES C CXX)
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT WIN32 OR NOT MINGW)
+  message(FATAL_ERROR "This isolated build requires the Windows MinGW cross toolchain")
+endif()
+get_filename_component(IIMT_SOURCE "${CMAKE_CURRENT_LIST_DIR}/../.." ABSOLUTE)
+set(PYTHON_WINDOWS_ROOT "" CACHE PATH "Official CPython 3.12 Windows NuGet tools directory")
+set(PYBIND11_HEADERS "" CACHE PATH "pybind11 include directory (headers only)")
+if(NOT EXISTS "${PYTHON_WINDOWS_ROOT}/include/Python.h" OR
+   NOT EXISTS "${PYTHON_WINDOWS_ROOT}/libs/python312.lib" OR
+   NOT EXISTS "${PYBIND11_HEADERS}/pybind11/pybind11.h")
+  message(FATAL_ERROR "Explicit Windows Python headers/import library and pybind11 headers required")
+endif()
+# Avoid executing the target Windows interpreter during a Linux-hosted CMake run.
+# Each MODULE still compiles all source for _WIN32 and links CPython's PE import lib.
+function(pybind11_add_module target)
+  cmake_parse_arguments(PB "MODULE;NO_EXTRAS" "" "" ${ARGN})
+  add_library(${target} MODULE ${PB_UNPARSED_ARGUMENTS})
+  target_include_directories(${target} PRIVATE
+    "${PYTHON_WINDOWS_ROOT}/include" "${PYBIND11_HEADERS}")
+  target_link_libraries(${target} PRIVATE "${PYTHON_WINDOWS_ROOT}/libs/python312.lib")
+  set_target_properties(${target} PROPERTIES PREFIX "" SUFFIX ".cp312-win_amd64.pyd")
+  target_compile_definitions(${target} PRIVATE NOMINMAX WIN32_LEAN_AND_MEAN)
+endfunction()
+include("${IIMT_SOURCE}/cpp/control.cmake")
+include("${IIMT_SOURCE}/cpp/model.cmake")
+include("${IIMT_SOURCE}/cpp/viewer.cmake")
+# MinGW static ImGui backend requires OpenGL after its archive on the link line.
+target_link_libraries(imgui::imgui INTERFACE OpenGL::GL)
+install(FILES "${IIMT_SOURCE}/vendor/windows/iimtcl.dll" DESTINATION iimt/vendor)

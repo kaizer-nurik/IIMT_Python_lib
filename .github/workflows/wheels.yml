@@ -1,0 +1,122 @@
+name: Native wheels (localhost mocks only)
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+permissions:
+  contents: read
+
+env:
+  CMAKE_BUILD_PARALLEL_LEVEL: '2'
+  PIP_DISABLE_PIP_VERSION_CHECK: '1'
+
+jobs:
+  linux:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Native build dependencies (not needed by wheel users)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends ninja-build cmake g++ \
+            libompl-dev libfcl-dev libassimp-dev libtinyxml2-dev libeigen3-dev \
+            libglfw3-dev libgl1-mesa-dev libimgui-dev pkg-config \
+            libboost-filesystem-dev libboost-serialization-dev libboost-system-dev \
+            xvfb xauth
+          python -m pip install scikit-build-core==1.1.1 pybind11==3.1.0 auditwheel==6.8.2 patchelf==0.19.1.0
+      - name: Build and repair (glibc 2.35 minimum)
+        run: python scripts/build_wheels.py --platform manylinux_2_35_x86_64
+      - name: Install wheel into fresh environment and verify
+        run: |
+          python -m venv "$RUNNER_TEMP/wheel-test"
+          wheel=$(find wheelhouse -maxdepth 1 -name '*.whl' -print -quit)
+          "$RUNNER_TEMP/wheel-test/bin/python" -m pip install "${wheel}[test,notebook]"
+          cd "$RUNNER_TEMP"
+          "$RUNNER_TEMP/wheel-test/bin/python" "$GITHUB_WORKSPACE/scripts/wheel_smoke.py"
+          "$RUNNER_TEMP/wheel-test/bin/python" -m pytest "$GITHUB_WORKSPACE/tests" -q --junitxml="$GITHUB_WORKSPACE/wheel-tests.xml"
+          "$RUNNER_TEMP/wheel-test/bin/python" "$GITHUB_WORKSPACE/scripts/wheel_smoke.py" --junit "$GITHUB_WORKSPACE/wheel-tests.xml"
+          xvfb-run -a "$RUNNER_TEMP/wheel-test/bin/python" "$GITHUB_WORKSPACE/cpp/viewer/smoke.py"
+      - name: Upload validated wheel and test report (not a package publication)
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: linux-cp${{ matrix.python }}
+          path: |
+            wheelhouse/*.whl
+            wheel-tests.xml
+          if-no-files-found: error
+
+  windows:
+    runs-on: windows-2022
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.11', '3.12', '3.13']
+    env:
+      VCPKG_DISABLE_METRICS: '1'
+      CMAKE_GENERATOR: Visual Studio 17 2022
+      CMAKE_GENERATOR_PLATFORM: x64
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: x64
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          repository: microsoft/vcpkg
+          ref: d4c0a46cb8f63e5c9fa007d13baf1cb3e43bf7e3
+          path: .build/vcpkg
+      - name: Native MSVC dependencies
+        shell: pwsh
+        run: |
+          $vcpkg = Join-Path $pwd '.build/vcpkg'
+          & "$vcpkg/bootstrap-vcpkg.bat" -disableMetrics
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & "$vcpkg/vcpkg.exe" install --triplet x64-windows "--x-manifest-root=$pwd" "--x-install-root=$pwd/vcpkg_installed"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          python -m pip install scikit-build-core==1.1.1 pybind11==3.1.0 delvewheel==1.13.2
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          "CMAKE_ARGS=-DCMAKE_TOOLCHAIN_FILE=$vcpkg/scripts/buildsystems/vcpkg.cmake -DVCPKG_TARGET_TRIPLET=x64-windows -DVCPKG_INSTALLED_DIR=$pwd/vcpkg_installed" | Out-File -Append -Encoding utf8 $env:GITHUB_ENV
+      - name: Build and repair including runtime-loaded vendor SDK
+        shell: pwsh
+        run: |
+          python scripts/build_wheels.py --vcpkg-installed vcpkg_installed/x64-windows
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Fresh wheel installation, native controller/planner tests and GUI smoke
+        shell: pwsh
+        run: |
+          $test = Join-Path $env:RUNNER_TEMP 'wheel-test'
+          python -m venv $test
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $python = Join-Path $test 'Scripts/python.exe'
+          $wheels = @(Get-ChildItem wheelhouse/*.whl)
+          if ($wheels.Count -ne 1) { throw 'Expected one repaired wheel' }
+          & $python -m pip install "$($wheels[0].FullName)[test,notebook]"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          Set-Location $env:RUNNER_TEMP
+          & $python "$env:GITHUB_WORKSPACE/scripts/wheel_smoke.py"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & $python -m pytest "$env:GITHUB_WORKSPACE/tests" -q "--junitxml=$env:GITHUB_WORKSPACE/wheel-tests.xml"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & $python "$env:GITHUB_WORKSPACE/scripts/wheel_smoke.py" --junit "$env:GITHUB_WORKSPACE/wheel-tests.xml"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          & $python "$env:GITHUB_WORKSPACE/cpp/viewer/smoke.py"
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+      - name: Upload only after native Windows execution passes
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: windows-cp${{ matrix.python }}
+          path: |
+            wheelhouse/*.whl
+            wheel-tests.xml
+          if-no-files-found: error

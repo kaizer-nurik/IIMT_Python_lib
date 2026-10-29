@@ -1,0 +1,14 @@
+{
+  "name": "iimt-native-dependencies",
+  "version-string": "0.1.0",
+  "builtin-baseline": "d4c0a46cb8f63e5c9fa007d13baf1cb3e43bf7e3",
+  "dependencies": [
+    "assimp",
+    "eigen3",
+    "fcl",
+    "glfw3",
+    {"name": "imgui", "features": ["glfw-binding", "opengl2-binding"]},
+    "ompl",
+    "tinyxml2"
+  ]
+}
