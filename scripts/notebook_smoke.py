@@ -1,5 +1,6 @@
-"""Run actual notebook cells on external localhost mocks; never contact hardware."""
+"""Run installed-wheel notebook cells on localhost mocks; never contact hardware."""
 
+import sys
 from pathlib import Path
 
 import nbformat
@@ -16,6 +17,15 @@ def main():
         config = config.replace("RUN_APPROACH = False", "RUN_APPROACH = True")
         config = config.replace("RUN_CSV = False", "RUN_CSV = True")
         assert "USE_MOCK = True" in config and "VIEWER = False" in config
+        # A global kernelspec must not silently test a different Python ABI.
+        config += (
+            "\nimport sys, iimt\n"
+            f"assert Path(sys.executable).resolve() == Path({sys.executable!r}).resolve(), "
+            "sys.executable\n"
+            f"assert Path(sys.prefix).resolve() == Path({sys.prefix!r}).resolve(), sys.prefix\n"
+            "assert Path(iimt.__file__).resolve().is_relative_to(Path(sys.prefix).resolve()), "
+            "iimt.__file__\n"
+        )
         notebook.cells[1].source = config
         NotebookClient(notebook, timeout=180, resources={"metadata": {"path": str(ROOT)}}).execute()
         errors = [

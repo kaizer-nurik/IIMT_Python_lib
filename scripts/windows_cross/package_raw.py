@@ -37,7 +37,9 @@ def main() -> None:
     )
     parser.add_argument("--deps", type=Path, required=True, help="vcpkg release bin directory")
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--python-abi", choices=[f"3{x}" for x in range(10, 16)], default="312")
     args = parser.parse_args()
+    tag = f"cp{args.python_abi}"
     args.output.mkdir(parents=True, exist_ok=True)
     project = tomllib.loads((ROOT / "pyproject.toml").read_text())["project"]
     version = project["version"]
@@ -52,8 +54,19 @@ def main() -> None:
             continue
         contents["iimt/" + path.relative_to(ROOT / "src/iimt").as_posix()] = path.read_bytes()
     for name in ("_control", "_model", "_viewer"):
-        binary = args.modules / f"{name}.cp312-win_amd64.pyd"
+        binary = args.modules / f"{name}.{tag}-win_amd64.pyd"
         require_pe64(binary)
+        imports = subprocess.check_output(
+            ["x86_64-w64-mingw32-objdump", "-p", str(binary)], text=True
+        )
+        python_dlls = {
+            line.split(":", 1)[1].strip().lower()
+            for line in imports.splitlines()
+            if "DLL Name:" in line and "python" in line.lower()
+        }
+        expected = {f"python{args.python_abi}.dll"}
+        if python_dlls != expected:
+            raise ValueError(f"Wrong CPython imports in {binary}: {python_dlls} != {expected}")
         contents["iimt/" + binary.name] = binary.read_bytes()
     sdk = ROOT / "vendor/windows/iimtcl.dll"
     require_pe64(sdk)
@@ -74,7 +87,7 @@ def main() -> None:
         "\n".join(metadata) + "\n\n" + (ROOT / "README.md").read_text()
     ).encode()
     contents[info + "/WHEEL"] = (
-        b"Wheel-Version: 1.0\nGenerator: iimt-native-windows-cross\nRoot-Is-Purelib: false\nTag: cp312-cp312-win_amd64\n"
+        f"Wheel-Version: 1.0\nGenerator: iimt-native-windows-cross\nRoot-Is-Purelib: false\nTag: {tag}-{tag}-win_amd64\n".encode()
     )
     contents[info + "/entry_points.txt"] = b"[console_scripts]\niimt-mock = iimt.mock:main\n"
     contents[info + "/licenses/SDK_PROVENANCE.md"] = (ROOT / "vendor/PROVENANCE.md").read_bytes()
@@ -91,7 +104,7 @@ def main() -> None:
         writer.writerow((name, "sha256=" + digest, len(data)))
     writer.writerow((info + "/RECORD", "", ""))
     contents[info + "/RECORD"] = record.getvalue().encode()
-    wheel = args.output / f"iimt_native-{version}-cp312-cp312-win_amd64.whl"
+    wheel = args.output / f"iimt_native-{version}-{tag}-{tag}-win_amd64.whl"
     with zipfile.ZipFile(wheel, "w", zipfile.ZIP_DEFLATED) as archive:
         for name, data in contents.items():
             archive.writestr(name, data)

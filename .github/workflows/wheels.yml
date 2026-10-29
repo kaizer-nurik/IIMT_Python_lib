@@ -18,7 +18,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
@@ -34,11 +34,15 @@ jobs:
             xvfb xauth
           python -m pip install scikit-build-core==1.1.1 pybind11==3.1.0 auditwheel==6.8.2 patchelf==0.19.1.0
       - name: Build and repair (glibc 2.35 minimum)
-        run: python scripts/build_wheels.py --platform manylinux_2_35_x86_64
+        run: python scripts/build_wheels.py --platform manylinux_2_35_x86_64 --output "$RUNNER_TEMP/iimt-wheel-output"
       - name: Install wheel into fresh environment and verify
         run: |
           python -m venv "$RUNNER_TEMP/wheel-test"
-          wheel=$(find wheelhouse -maxdepth 1 -name '*.whl' -print -quit)
+          tag=$(python -c 'import sys; print(f"cp{sys.version_info.major}{sys.version_info.minor}")')
+          wheels=("$RUNNER_TEMP"/iimt-wheel-output/*-${tag}-${tag}-manylinux_2_35_x86_64.whl)
+          test "${#wheels[@]}" -eq 1
+          test -f "${wheels[0]}"
+          wheel=${wheels[0]}
           "$RUNNER_TEMP/wheel-test/bin/python" -m pip install "${wheel}[test,notebook]"
           cd "$RUNNER_TEMP"
           "$RUNNER_TEMP/wheel-test/bin/python" "$GITHUB_WORKSPACE/scripts/wheel_smoke.py"
@@ -50,7 +54,7 @@ jobs:
         with:
           name: linux-cp${{ matrix.python }}
           path: |
-            wheelhouse/*.whl
+            ${{ runner.temp }}/iimt-wheel-output/*.whl
             wheel-tests.xml
           if-no-files-found: error
 
@@ -60,7 +64,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python: ['3.10', '3.11', '3.12', '3.13']
+        python: ['3.10', '3.11', '3.12', '3.13', '3.14', '3.15']
     env:
       VCPKG_DISABLE_METRICS: '1'
       CMAKE_GENERATOR: Visual Studio 17 2022
@@ -90,7 +94,7 @@ jobs:
       - name: Build and repair including runtime-loaded vendor SDK
         shell: pwsh
         run: |
-          python scripts/build_wheels.py --vcpkg-installed vcpkg_installed/x64-windows
+          python scripts/build_wheels.py --vcpkg-installed vcpkg_installed/x64-windows --output "$env:RUNNER_TEMP/iimt-wheel-output"
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
       - name: Fresh wheel installation, native controller/planner tests and GUI smoke
         shell: pwsh
@@ -99,7 +103,9 @@ jobs:
           python -m venv $test
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
           $python = Join-Path $test 'Scripts/python.exe'
-          $wheels = @(Get-ChildItem wheelhouse/*.whl)
+          $tag = python -c 'import sys; print(f"cp{sys.version_info.major}{sys.version_info.minor}")'
+          if ($LASTEXITCODE) { exit $LASTEXITCODE }
+          $wheels = @(Get-ChildItem "$env:RUNNER_TEMP/iimt-wheel-output/*-$tag-$tag-win_amd64.whl")
           if ($wheels.Count -ne 1) { throw 'Expected one repaired wheel' }
           & $python -m pip install "$($wheels[0].FullName)[test,notebook]"
           if ($LASTEXITCODE) { exit $LASTEXITCODE }
@@ -117,6 +123,6 @@ jobs:
         with:
           name: windows-cp${{ matrix.python }}
           path: |
-            wheelhouse/*.whl
+            ${{ runner.temp }}/iimt-wheel-output/*.whl
             wheel-tests.xml
           if-no-files-found: error

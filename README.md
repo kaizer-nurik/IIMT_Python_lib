@@ -4,11 +4,13 @@ Python API, **C++-контроллер**, OMPL **RRTConnect**, FCL collision che
 небольшое окно GLFW/OpenGL + Dear ImGui. Одна или две руки IIMT-CI-05; совместимый
 пользовательский URDF; Linux x86-64 / Windows x64 — целевые платформы.
 
-**Статус:** готовые CPython 3.12 wheels для Linux x86-64 и Windows x64.
-Windows проверена на настоящей Windows Server 2022 в локальной KVM-машине,
-не в Wine; Linux — также в чистом контейнере без ROS и инструментов сборки.
-SDK, внешний mock, single/dual CSV, планирование и GUI проверяются отдельно.
-Артефакты, измерения и ограничения: [VERIFICATION.md](docs/VERIFICATION.md).
+**12 готовых wheels для CPython 3.10–3.15:** файлы в `wheelhouse/`, точные версии,
+SHA256 и результаты — в [WHEEL_MATRIX.md](docs/WHEEL_MATRIX.md). Пройдены 840 тестов
+без пропусков и 24 запуска single/dual ноутбука. Windows проверена
+на настоящей Windows Server 2022 в локальной KVM-машине, не в Wine; Linux — в
+отдельных окружениях соответствующих интерпретаторов. SDK, внешний mock,
+single/dual CSV, планирование и GUI проверяются отдельно. Исторические измерения
+первой CPython 3.12 поставки: [VERIFICATION.md](docs/VERIFICATION.md).
 
 ## Что перенесено из ROS
 
@@ -42,13 +44,22 @@ python -m pip install "./wheelhouse/iimt_native-0.1.0-cp312-cp312-manylinux_2_39
 # python -m pip install "./wheelhouse/iimt_native-0.1.0-cp312-cp312-win_amd64.whl[notebook]"
 ```
 
-Локальный Linux wheel требует **glibc >= 2.39** (например Ubuntu 24.04), CPython 3.12.
-Не переименовывайте его в Windows/manylinux другого поколения. Windows wheel
+Пример выше — для Python 3.12. Для другой версии выбирайте оба тега в имени:
+`cp310` — 3.10, `cp311` — 3.11, …, `cp315` — 3.15; не переименовывайте файл.
+Все эти сборки — **стандартный CPython с GIL, x86-64**, не PyPy, ARM64 и не
+free-threaded Python (`cp313t` / `cp314t` / `cp315t`). Теги должны совпадать с Python,
+из которого вызывается `python -m pip`.
+Для Windows/Python 3.15 с `[notebook]` нужен описанный в
+[инструкции установки](docs/WHEEL_MATRIX.md#установка) preinstall pure-Python PyYAML.
+
+Локальные Linux wheels требуют **glibc >= 2.39** (например Ubuntu 24.04).
+Не переименовывайте их в Windows/manylinux другого поколения. Windows wheel
 содержит настоящие PE-модули и DLL-зависимости; требует Windows 10 1803+ / Server
-2022 и CPython 3.12 x64. Фактически протестирована Server 2022, не все редакции
+2022 и соответствующий CPython x64. Фактически протестирована Server 2022, не все редакции
 Windows. Компилятор конечному пользователю не нужен; для GUI нужны рабочий
 OpenGL 2.1+ драйвер и графическая сессия. Headless работает с `viewer=False`.
-Рецепт CI для Python 3.10–3.13 не означает, что все эти wheels уже собраны.
+CI-рецепт теперь охватывает 3.10–3.15; фактические локальные проверки отражены
+отдельно в матрице, а не выдаются за запуск GitHub Actions.
 Сборка, DLL/.so closure, версии, ограничения: [DISTRIBUTION.md](docs/DISTRIBUTION.md).
 
 ## Быстрый пример: внешняя имитация
@@ -225,6 +236,7 @@ abort строятся частичные графики; metadata/CSV/PNG со�
 [PARAMETERS.md](docs/PARAMETERS.md) — все настройки с единицами/ограничениями.
 [FEATURES.md](docs/FEATURES.md) — матрица ROS → native и отличия.
 [VERIFICATION.md](docs/VERIFICATION.md) — фактические проверки и незакрытые критерии.
+[WHEEL_MATRIX.md](docs/WHEEL_MATRIX.md) — актуальная матрица Python 3.10–3.15 и wheels.
 [vendor/PROVENANCE.md](vendor/PROVENANCE.md) — происхождение SDK и лицензирование.
 
 ```

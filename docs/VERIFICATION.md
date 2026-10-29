@@ -1,6 +1,12 @@
 # Verification — 2026-10-29
 
-## Supplied, tested artifacts
+> **Historical CPython 3.12 baseline.** The later Python 3.10–3.15 rebuild replaces
+> the wheel files with the same version/ABI names. Current hashes and per-version
+> qualification are in [WHEEL_MATRIX.md](WHEEL_MATRIX.md) and
+> `wheelhouse/SHA256SUMS`; the hashes and timing measurements below identify the
+> earlier artifacts, not a new measurement of every matrix cell.
+
+## Earlier tested artifacts
 
 Both wheels are **CPython 3.12, x86-64**, installable without an end-user compiler.
 Neither is a renamed artifact from the other operating system.
