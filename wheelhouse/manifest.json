@@ -1,7 +1,7 @@
 {
   "package": "iimt-native",
   "version": "0.1.0",
-  "verified_at_utc": "2026-10-30T01:40:46.675547+00:00",
+  "verified_at_utc": "2026-10-30T07:46:50.671466+00:00",
   "architecture": "x86_64",
   "python_flavor": "standard GIL CPython",
   "linux_glibc_minimum": "2.39",
@@ -12,250 +12,393 @@
   "artifacts": [
     {
       "wheel": "iimt_native-0.1.0-cp310-cp310-manylinux_2_39_x86_64.whl",
-      "sha256": "0e45c3a516fcdb9542c5b0310c65da8c69695d91a98a91e367de11072cb04685",
-      "bytes": 24828218,
+      "sha256": "55e2c35de1b6265084438b406f3dcae874cd3010c89a20e4e59b3fb37bd14b47",
+      "bytes": 24832225,
       "platform": "linux",
       "python_abi": "cp310",
       "tested_python": "3.10.22",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "baseline_passed_renderer_unchanged",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "0e45c3a516fcdb9542c5b0310c65da8c69695d91a98a91e367de11072cb04685",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp310-cp310-win_amd64.whl",
-      "sha256": "03b992f56a252fcad96de66ebfc9f0f72a424e4d1f17ab205b370affad8e4870",
-      "bytes": 30371532,
+      "sha256": "f497fb09c9ff1a5ca9063b9bfae22593aaa4bca90ce84cf57be4f80ebe72cc28",
+      "bytes": 30375552,
       "platform": "windows",
       "python_abi": "cp310",
       "tested_python": "3.10.11",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
-      "mesh_orientation_regressions": 10
+      "mesh_orientation_regressions": 10,
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "03b992f56a252fcad96de66ebfc9f0f72a424e4d1f17ab205b370affad8e4870",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp311-cp311-manylinux_2_39_x86_64.whl",
-      "sha256": "862b859c0fc1c16b23fa9e243b33883e9ea6dda6cfc0f880b60524798883fe3f",
-      "bytes": 24831177,
+      "sha256": "45982d6facb2715b0820b714369d4bcd287c45ba574ad39ed24e4d6c89a49740",
+      "bytes": 24835183,
       "platform": "linux",
       "python_abi": "cp311",
       "tested_python": "3.11.17",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "baseline_passed_renderer_unchanged",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "862b859c0fc1c16b23fa9e243b33883e9ea6dda6cfc0f880b60524798883fe3f",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp311-cp311-win_amd64.whl",
-      "sha256": "dd34de79cdc160a4f2f3bff775fb343db331aded41941d4f5a94834ec05cb03d",
-      "bytes": 30374178,
+      "sha256": "57d69dae3c37b5bebd34bbbe1e82be6be31c55f29735d5d56830b1810906bf2b",
+      "bytes": 30378198,
       "platform": "windows",
       "python_abi": "cp311",
       "tested_python": "3.11.9",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
-      "mesh_orientation_regressions": 10
+      "mesh_orientation_regressions": 10,
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "dd34de79cdc160a4f2f3bff775fb343db331aded41941d4f5a94834ec05cb03d",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp312-cp312-manylinux_2_39_x86_64.whl",
-      "sha256": "bb6b52e610c8fce6b70ec434789022d854e9053399451dfc7cf20b57bf8fe2f3",
-      "bytes": 24831772,
+      "sha256": "eaa0349ea3219f7c5c85dc9c53b6418a53d5f8a03c9f8b7b7ac43bfa74d86873",
+      "bytes": 24835780,
       "platform": "linux",
       "python_abi": "cp312",
       "tested_python": "3.12.15",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
       "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "single_dual_notebooks": "passed_TIME_SCALE_2",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "passed",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "bb6b52e610c8fce6b70ec434789022d854e9053399451dfc7cf20b57bf8fe2f3",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp312-cp312-win_amd64.whl",
-      "sha256": "81b0c33a602ad4ecc6099af88713f957005b0186febf975bbe2d5fbed02b45f1",
-      "bytes": 30377352,
+      "sha256": "774cd3085d2c3852dcfaa32fd24f464dec6a0d3faebc9c628ed4aef38761a433",
+      "bytes": 30381371,
       "platform": "windows",
       "python_abi": "cp312",
       "tested_python": "3.12.10",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
       "native_gui": "passed",
-      "single_dual_notebooks": "failed",
+      "single_dual_notebooks": "passed_TIME_SCALE_2",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
-      "notebook_limitation": "Windows cp312 VM: max_step guard aborted CSV after scheduler delay; unchanged safety limits, one quiet retry also failed. Not a full notebook pass."
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "81b0c33a602ad4ecc6099af88713f957005b0186febf975bbe2d5fbed02b45f1",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "failed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp313-cp313-manylinux_2_39_x86_64.whl",
-      "sha256": "fbda458163b6207f1a4640180a0c0264da4d1572012c517b0291cc56dcc1bd0b",
-      "bytes": 24831845,
+      "sha256": "5a0a15f8935d9c1dbc7e69741e28204cf3548b60329510c8289fb05c3bf987b9",
+      "bytes": 24835851,
       "platform": "linux",
       "python_abi": "cp313",
       "tested_python": "3.13.16",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "baseline_passed_renderer_unchanged",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "fbda458163b6207f1a4640180a0c0264da4d1572012c517b0291cc56dcc1bd0b",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp313-cp313-win_amd64.whl",
-      "sha256": "5abe8c6813cc95d1adb88bd2003e6a76a9de00a315f6b4173b7303a5804ba1b1",
-      "bytes": 30377952,
+      "sha256": "32568d21a26d0d03642eb76699252faab4bbc3297d067596e586a5772766d92a",
+      "bytes": 30381973,
       "platform": "windows",
       "python_abi": "cp313",
       "tested_python": "3.13.17",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
-      "mesh_orientation_regressions": 10
+      "mesh_orientation_regressions": 10,
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "5abe8c6813cc95d1adb88bd2003e6a76a9de00a315f6b4173b7303a5804ba1b1",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp314-cp314-manylinux_2_39_x86_64.whl",
-      "sha256": "15852fa1733028691038ba35dc27c05fcd03718fd1f1641cb45a5dbbf2c072fa",
-      "bytes": 24832679,
+      "sha256": "aeab70ce1d46f2fdf9efc54414fd1312212c2b80b463b9269e311d8727d1d626",
+      "bytes": 24836686,
       "platform": "linux",
       "python_abi": "cp314",
       "tested_python": "3.14.8",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "baseline_passed_renderer_unchanged",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "15852fa1733028691038ba35dc27c05fcd03718fd1f1641cb45a5dbbf2c072fa",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp314-cp314-win_amd64.whl",
-      "sha256": "6d0c765943183f214d652798ab2802a5a745a636b0d1e3125908de0c1138e0cd",
-      "bytes": 30987130,
+      "sha256": "08ba564e5ae13ec1bedd5db5124c50fa7440a870cb087db50dc6aa22f316af55",
+      "bytes": 30382536,
       "platform": "windows",
       "python_abi": "cp314",
       "tested_python": "3.14.10",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
-      "mesh_orientation_regressions": 10
+      "mesh_orientation_regressions": 10,
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "6d0c765943183f214d652798ab2802a5a745a636b0d1e3125908de0c1138e0cd",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp315-cp315-manylinux_2_39_x86_64.whl",
-      "sha256": "84e6600423f616b307a8d7254e38e758b6e329f1e8e163e288b449bdf3ce03e1",
-      "bytes": 24832686,
+      "sha256": "aba5d872258c0ead33b83c6296168c3683243444a3daf52d5b164e1559b18451",
+      "bytes": 24836691,
       "platform": "linux",
       "python_abi": "cp315",
       "tested_python": "3.15.0",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
-      "test_venv_reused": false,
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
+      "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
       "mesh_orientation_regressions": 10,
       "host_libGL": true,
       "private_glvnd_absent": true,
-      "spawned_single_dual_gui_pixels": "passed"
+      "spawned_single_dual_gui_pixels": "baseline_passed_renderer_unchanged",
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "84e6600423f616b307a8d7254e38e758b6e329f1e8e163e288b449bdf3ce03e1",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     },
     {
       "wheel": "iimt_native-0.1.0-cp315-cp315-win_amd64.whl",
-      "sha256": "06627b2afec447871aa7a3a1d0152b2f2659e40fd496cce5e463a2e7015acb30",
-      "bytes": 30987240,
+      "sha256": "8d7d91de3bf6a1b61f3ac70393657f7f1a2d19af2ecdf6668477a0a7e51f7e7a",
+      "bytes": 30382618,
       "platform": "windows",
       "python_abi": "cp315",
       "tested_python": "3.15.2",
-      "tests": 80,
+      "tests": 108,
       "failures": 0,
       "errors": 0,
       "skips": 0,
       "sdk_mock": "passed",
-      "native_gui": "passed",
-      "single_dual_notebooks": "passed",
+      "native_gui": "not_rerun_after_python_update",
+      "single_dual_notebooks": "not_rerun_after_python_update",
       "test_venv_reused": true,
       "record_and_native_abi": "verified",
       "collada_axes_preserved": true,
-      "mesh_orientation_regressions": 10
+      "mesh_orientation_regressions": 10,
+      "native_binaries_byte_identical": true,
+      "python_update": [
+        "iimt/trajectory.py",
+        "iimt/plotting.py"
+      ],
+      "previous_qualification": {
+        "sha256": "06627b2afec447871aa7a3a1d0152b2f2659e40fd496cce5e463a2e7015acb30",
+        "tests": 80,
+        "native_gui": "passed",
+        "single_dual_notebooks": "passed"
+      }
     }
-  ]
+  ],
+  "update": "Python-only CSV preparation/preview; native binaries and SDK byte-identical",
+  "current_gui_notebook_scope": {
+    "abis": [
+      "cp312"
+    ],
+    "operating_systems": [
+      "linux",
+      "windows"
+    ],
+    "notebook_time_scale": 2.0,
+    "note": "Not a requalification of original-speed CSV or physical hardware."
+  }
 }

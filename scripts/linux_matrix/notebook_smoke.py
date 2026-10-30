@@ -1,6 +1,7 @@
 """Execute installed-wheel notebooks against external localhost mocks only."""
 
 import argparse
+import re
 import sys
 from pathlib import Path
 
@@ -18,10 +19,17 @@ def main():
     for dual in (False, True):
         notebook = nbformat.read(ROOT / "notebooks/csv_single_dual.ipynb", as_version=4)
         source = notebook.cells[1].source
-        assert "USE_MOCK = True" in source and "VIEWER = False" in source
-        source = source.replace("DUAL = True", f"DUAL = {dual}")
-        source = source.replace("RUN_APPROACH = False", "RUN_APPROACH = True")
-        source = source.replace("RUN_CSV = False", "RUN_CSV = True")
+        # Override only the in-memory test copy, regardless of user's saved flags.
+        for key, value in {
+            "DUAL": repr(dual),
+            "USE_MOCK": "True",
+            "VIEWER": "False",
+            "RUN_APPROACH": "True",
+            "RUN_CSV": "True",
+            "TIME_SCALE": "2.0",
+        }.items():
+            source, count = re.subn(rf"(?m)^{key}\s*=.*$", f"{key} = {value}", source)
+            assert count == 1, key
         source = "\n".join(
             (
                 f"OUTPUT = Path({str(args.output / ('dual' if dual else 'single'))!r})"
