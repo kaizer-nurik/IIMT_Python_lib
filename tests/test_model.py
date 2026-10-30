@@ -173,6 +173,83 @@ endsolid triangle
         _model.Model(str(path), NAMES, package_paths={"fixtures": str(tmp_path)})
 
 
+@pytest.mark.parametrize("up_axis", ["X_UP", "Y_UP", "Z_UP"])
+def test_collada_preserves_axes_node_transforms_units_and_urdf_origin(tmp_path, up_axis):
+    # RViz preserves authored coordinates, not Assimp's automatic Y-up conversion.
+    (tmp_path / "triangle.dae").write_text(f"""<?xml version="1.0"?>
+<COLLADA xmlns="http://www.collada.org/2005/11/COLLADASchema" version="1.4.1">
+  <asset><unit name="centimeter" meter="0.01"/><up_axis>{up_axis}</up_axis></asset>
+  <library_geometries><geometry id="triangle"><mesh>
+    <source id="positions"><float_array id="coords" count="9">0 0 0 1 0 0 0 2 3</float_array>
+      <technique_common><accessor source="#coords" count="3" stride="3">
+        <param name="X" type="float"/><param name="Y" type="float"/>
+        <param name="Z" type="float"/>
+      </accessor></technique_common></source>
+    <vertices id="vertices"><input semantic="POSITION" source="#positions"/></vertices>
+    <triangles count="1"><input semantic="VERTEX" source="#vertices" offset="0"/>
+      <p>0 1 2</p></triangles>
+  </mesh></geometry></library_geometries>
+  <library_visual_scenes><visual_scene id="scene">
+    <node><translate>10 20 30</translate><rotate>0 0 1 90</rotate>
+      <node><translate>1 0 0</translate><instance_geometry url="#triangle"/></node>
+    </node>
+  </visual_scene></library_visual_scenes>
+  <scene><instance_visual_scene url="#scene"/></scene>
+</COLLADA>""")
+    path = write_model(tmp_path)
+    path.write_text(
+        path.read_text()
+        .replace('<sphere radius=".1"/>', '<mesh filename="triangle.dae" scale="2 3 4"/>', 2)
+        .replace('<origin xyz="1 0 .5"/>', f'<origin xyz="1 2 3" rpy="0 0 {math.pi / 2}"/>', 2)
+    )
+    model = _model.Model(str(path), NAMES)
+    vertices = np.asarray(model.geometry_local()[0]["vertices"])
+    # Nested DAE transforms -> centimeters -> URDF scale -> URDF Rz(90) + translation.
+    expected = np.array([[0.37, 2.20, 4.20], [0.34, 2.20, 4.20], [0.37, 2.16, 4.32]])
+    # Assimp may reorder vertices when joining meshes.
+    assert vertices.shape == expected.shape
+    assert all(np.min(np.linalg.norm(vertices - point, axis=1)) < 1e-6 for point in expected)
+
+
+@pytest.mark.parametrize(
+    "link",
+    [
+        "base_link",
+        "shoulder_link",
+        "upper_arm_link",
+        "forearm_link",
+        "wrist_1_link",
+        "wrist_2_link",
+        "wrist_3_link",
+    ],
+)
+def test_ci05_visual_bounds_match_authored_collision_meshes(link):
+    from iimt.config import ASSETS, JOINTS
+
+    model = _model.Model(str(ASSETS / "ci05.urdf"), list(JOINTS))
+    visual = next(mesh for mesh in model.geometry_local() if mesh["link"] == link)
+    basename = "fore_arm_link" if link == "forearm_link" else link
+    data = (ASSETS / "meshes/collision" / f"{basename}.stl").read_bytes()
+    count = int.from_bytes(data[80:84], "little")
+    # Independent binary STL coordinates, without going through Assimp again.
+    triangles = np.frombuffer(
+        data,
+        offset=84,
+        count=count,
+        dtype=np.dtype(
+            [
+                ("normal", "<f4", (3,)),
+                ("vertices", "<f4", (3, 3)),
+                ("attribute", "<u2"),
+            ]
+        ),
+    )
+    collision = triangles["vertices"].reshape(-1, 3)
+    vertices = np.asarray(visual["vertices"])
+    np.testing.assert_allclose(vertices.min(axis=0), collision.min(axis=0), atol=1e-6, rtol=0)
+    np.testing.assert_allclose(vertices.max(axis=0), collision.max(axis=0), atol=1e-6, rtol=0)
+
+
 def test_floor_exemption_limited_to_fixed_mount(tmp_path):
     path = write_model(
         tmp_path,

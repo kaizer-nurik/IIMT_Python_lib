@@ -6,6 +6,20 @@
 > `wheelhouse/SHA256SUMS`; the hashes and timing measurements below identify the
 > earlier artifacts, not a new measurement of every matrix cell.
 
+> **GUI correction, 2026-10-30:** the early Linux GUI checks asserted API return
+> values, not rendered pixels. They missed a split-GLdispatch packaging defect
+> that produced a black window. They must not be treated as proof of visible
+> Linux rendering. See [VIEWER_LINUX.md](VIEWER_LINUX.md) for the reproduction,
+> fix and replacement pixel-based checks. This does not invalidate the separate
+> controller/SDK tests or the Windows screenshots.
+
+> **Mesh correction, 2026-10-30:** screenshots and pixel checks did not validate
+> link orientation. Assimp's automatic COLLADA up-axis conversion rotated the
+> visual meshes incorrectly on both platforms. The loader now follows RViz's
+> axis-preserving policy; ten numerical regressions cover this defect. Original
+> CI05 STL collision geometry and FK were not changed. See
+> [VIEWER_MESHES.md](VIEWER_MESHES.md) and the current wheel matrix.
+
 ## Earlier tested artifacts
 
 Both wheels are **CPython 3.12, x86-64**, installable without an end-user compiler.

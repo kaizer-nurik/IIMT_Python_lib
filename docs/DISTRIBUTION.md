@@ -53,6 +53,16 @@ windowing/OpenGL drivers and Windows OS graphics services are not replaced by th
 package. Repair tools bundle non-policy native dependencies; installation still
 resolves the Python `numpy` dependency normally.
 
+On Linux, the viewer deliberately links the host `libGL.so.1` instead of packaging
+private GLVND dispatch libraries. Initial wheels incorrectly bundled a second
+dispatch and could open an all-black window despite successful API smoke calls.
+The fix, reinstall instructions and new pixel-based checks are documented in
+[VIEWER_LINUX.md](VIEWER_LINUX.md). A working host OpenGL driver is still required.
+
+An image with incorrectly rotated links is a separate, cross-platform COLLADA
+import issue, not an OpenGL-driver failure. The corrected loader preserves authored
+axes as RViz does; see [VIEWER_MESHES.md](VIEWER_MESHES.md).
+
 For **Windows CPython 3.15 with `[notebook]`**, this matrix needed a pure-Python
 PyYAML 6.0.3 preinstall because that dependency had no matching Windows wheel.
 The tested compiler-free command is in [WHEEL_MATRIX.md](WHEEL_MATRIX.md#установка).

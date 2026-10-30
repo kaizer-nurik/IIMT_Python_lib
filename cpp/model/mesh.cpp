@@ -1,6 +1,7 @@
 #include "model.hpp"
 
 #include <assimp/Importer.hpp>
+#include <assimp/config.h>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
 #include <fcl/geometry/bvh/BVH_model.h>
@@ -17,6 +18,8 @@ constexpr double kPi = 3.14159265358979323846;
 Mesh load_mesh(const std::filesystem::path &path,
                const Eigen::Vector3d &scale) {
   Assimp::Importer importer;
+  // Match RViz: keep authored COLLADA axes; URDF supplies the link orientation.
+  importer.SetPropertyBool(AI_CONFIG_IMPORT_COLLADA_IGNORE_UP_DIRECTION, true);
   const auto *scene = importer.ReadFile(
       path.u8string(), aiProcess_Triangulate | aiProcess_PreTransformVertices |
                            aiProcess_JoinIdenticalVertices |

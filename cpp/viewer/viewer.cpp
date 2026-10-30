@@ -118,6 +118,14 @@ public:
           "Cannot create OpenGL 2.1 viewer window; check display/GPU driver");
     }
     glfwMakeContextCurrent(window_);
+    if (!glGetString(GL_VERSION)) {
+      glfwDestroyWindow(window_);
+      window_ = nullptr;
+      glfwTerminate();
+      throw std::runtime_error(
+          "OpenGL context is not visible to the renderer; check for mixed "
+          "graphics libraries (Linux wheels must use the host libGL)");
+    }
     glfwSwapInterval(1);
     IMGUI_CHECKVERSION();
     context_ = ImGui::CreateContext();

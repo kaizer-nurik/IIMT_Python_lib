@@ -1,3 +1,8 @@
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
+  # GLFW creates its context through the host GLX stack. Keep rendering on that
+  # same stack: auditwheel would bundle a second dispatch with GLVND libOpenGL.
+  set(OpenGL_GL_PREFERENCE LEGACY)
+endif()
 find_package(OpenGL REQUIRED)
 find_package(glfw3 CONFIG REQUIRED)
 find_package(imgui CONFIG QUIET)

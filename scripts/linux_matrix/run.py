@@ -28,6 +28,7 @@ def main():
     env = os.environ.copy()
     env.pop("PYTHONPATH", None)
     env.pop("LD_LIBRARY_PATH", None)
+    env.pop("LD_PRELOAD", None)  # Do not let an operator workaround hide wheel linkage bugs.
     env.update(UV_PYTHON_INSTALL_DIR=str(BUILD / "python"), CMAKE_BUILD_PARALLEL_LEVEL="2")
     RESULTS.mkdir(parents=True, exist_ok=True)
     summary = {}
@@ -122,7 +123,19 @@ def main():
             junit = output / "tests.xml"
             run("tests", [testpython, "-m", "pytest", "-q", ROOT / "tests", f"--junitxml={junit}"])
             run("zero-skips", [testpython, ROOT / "scripts/wheel_smoke.py", "--junit", junit])
-            run("gui", ["xvfb-run", "-a", testpython, ROOT / "scripts/linux_matrix/gui_smoke.py"])
+            run(
+                "gui",
+                [
+                    "xvfb-run",
+                    "-a",
+                    "-s",
+                    "-screen 0 1280x960x24",
+                    testpython,
+                    ROOT / "scripts/linux_matrix/gui_smoke.py",
+                    "--output",
+                    output / "gui",
+                ],
+            )
             destination = ROOT / "wheelhouse" / wheel.name
             destination.write_bytes(wheel.read_bytes())
             result["status"] = "passed"
