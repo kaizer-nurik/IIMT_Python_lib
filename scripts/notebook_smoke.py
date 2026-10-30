@@ -1,5 +1,6 @@
 """Run installed-wheel notebook cells on localhost mocks; never contact hardware."""
 
+import re
 import sys
 from pathlib import Path
 
@@ -13,9 +14,17 @@ def main():
     for dual in (False, True):
         notebook = nbformat.read(ROOT / "notebooks/csv_single_dual.ipynb", as_version=4)
         config = notebook.cells[1].source
-        config = config.replace("DUAL = True", f"DUAL = {dual}")
-        config = config.replace("RUN_APPROACH = False", "RUN_APPROACH = True")
-        config = config.replace("RUN_CSV = False", "RUN_CSV = True")
+        # Override only the in-memory test copy, regardless of user's saved flags.
+        for key, value in {
+            "DUAL": repr(dual),
+            "USE_MOCK": "True",
+            "VIEWER": "False",
+            "RUN_APPROACH": "True",
+            "RUN_CSV": "True",
+            "TIME_SCALE": "2.0",
+        }.items():
+            config, count = re.subn(rf"(?m)^{key}\s*=.*$", f"{key} = {value}", config)
+            assert count == 1, key
         assert "USE_MOCK = True" in config and "VIEWER = False" in config
         # A global kernelspec must not silently test a different Python ABI.
         config += (
